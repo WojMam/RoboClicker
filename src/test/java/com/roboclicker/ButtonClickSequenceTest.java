@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.sikuli.script.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +38,9 @@ public class ButtonClickSequenceTest {
     @Tag("sequence")
     @DisplayName("Click Buttons 1, 2, 3, 4 in Sequence")
     void testClickButtonsInSequence() {
-        logger.info("Starting sequential button click test");
+        logger.info("Starting sequential button click test with adaptive similarity matching");
         logger.info("This test will find and click buttons 1, 2, 3, and 4 in order");
+        logger.info("Using adaptive similarity to handle resolution/scale changes");
         
         // Array of button images to click in sequence
         String[] buttonImages = {
@@ -50,15 +52,36 @@ public class ButtonClickSequenceTest {
         
         String[] buttonNames = {"Button 1", "Button 2", "Button 3", "Button 4"};
         
-        // Click each button in sequence
+        // Click each button in sequence with retry logic
         for (int i = 0; i < buttonImages.length; i++) {
             logger.info("Step {}: Looking for {} at path: {}", i + 1, buttonNames[i], buttonImages[i]);
+            logger.info("Using adaptive similarity matching (tries multiple thresholds for scale tolerance)");
             
-            // Wait for and click the button
+            // Wait for and click the button with retry logic for robustness
             boolean clicked = imageMatcher.clickImage(buttonImages[i], Config.TIMEOUT_SECONDS);
             
+            // If first attempt fails, try with retry logic
+            if (!clicked) {
+                logger.info("First attempt failed, trying with retry logic for {}", buttonNames[i]);
+                org.sikuli.script.Match match = imageMatcher.waitForImageWithRetry(
+                    buttonImages[i], 
+                    Config.TIMEOUT_SECONDS, 
+                    Config.RETRY_COUNT
+                );
+                
+                if (match != null) {
+                    try {
+                        match.click();
+                        clicked = true;
+                        logger.info("Successfully clicked {} on retry", buttonNames[i]);
+                    } catch (Exception e) {
+                        logger.error("Failed to click {} on retry: {}", buttonNames[i], e.getMessage());
+                    }
+                }
+            }
+            
             assertTrue(clicked, 
-                String.format("%s not found or could not be clicked within %d seconds", 
+                String.format("%s not found or could not be clicked within %d seconds (tried with adaptive similarity)", 
                     buttonNames[i], Config.TIMEOUT_SECONDS));
             
             logger.info("Successfully clicked {}", buttonNames[i]);

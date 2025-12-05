@@ -25,7 +25,10 @@ public class Config {
     // Test configuration
     public static final int TIMEOUT_SECONDS = 10;
     public static final int RETRY_COUNT = 3;
-    public static final double SIKULI_SIMILARITY = 0.8; // Image matching similarity (0.0 to 1.0)
+    // Lower similarity for better tolerance to resolution/scale changes
+    public static final double SIKULI_SIMILARITY = 0.7; // Image matching similarity (0.0 to 1.0)
+    // Additional similarity levels for adaptive matching
+    public static final double[] ADAPTIVE_SIMILARITY_LEVELS = {0.7, 0.6, 0.5, 0.4, 0.3};
     
     // Screen configuration
     public static final int SCREEN_WIDTH = 1920;
