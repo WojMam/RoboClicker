@@ -13,8 +13,9 @@ public class Config {
     // Project root directory
     private static final String PROJECT_ROOT = System.getProperty("user.dir");
     
-    // Image assets directory
-    public static final String IMAGES_DIR = PROJECT_ROOT + File.separator + "battlenetAssets";
+    // Image assets directory - located in test resources following Maven conventions
+    public static final String IMAGES_DIR = PROJECT_ROOT + File.separator + "src" + 
+            File.separator + "test" + File.separator + "resources" + File.separator + "assets";
     
     // Image file paths
     public static final String BUTTON_IMAGE_1 = IMAGES_DIR + File.separator + "1_button.png";
